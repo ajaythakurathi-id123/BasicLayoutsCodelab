@@ -47,13 +47,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,14 +80,12 @@ import androidx.compose.ui.unit.dp
 import com.codelab.basiclayouts.ui.theme.MySootheTheme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-//                MySootheApp()
-            MySootheTheme() {
-                MySootheApp(Modifier)
-            }
-
+            val windowSizeClass = calculateWindowSizeClass(activity = this)
+            MySootheApp(windowSizeClass)
         }
     }
 }
@@ -263,34 +272,90 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     // Implement composable here
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier) {
+        NavigationBarItem(selected = true, onClick = {}, label = {
+            Text(text = stringResource(id = R.string.bottom_navigation_home))
+        }, icon = {
+            Icon(
+                imageVector = Icons.Default.Spa,
+                contentDescription = null
+            )
+        })
+        NavigationBarItem(selected = true, onClick = {}, label = {
+            Text(text = stringResource(id = R.string.bottom_navigation_profile))
+        }, icon = {
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = null
+            )
+        })
+    }
 }
 
 // Step: MySoothe App - Scaffold
 @Composable
 fun MySootheAppPortrait() {
     // Implement composable here
+    MySootheTheme {
+        Scaffold(bottomBar = { SootheBottomNavigation() }) { padding ->
+            HomeScreen(Modifier.padding(padding))
+        }
+    }
 }
 
 // Step: Bottom navigation - Material
 @Composable
 private fun SootheNavigationRail(modifier: Modifier = Modifier) {
     // Implement composable here
+    NavigationRail(
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = modifier.padding(horizontal = 8.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            NavigationRailItem(selected = true, onClick = {}, label = {
+                Text(text = stringResource(id = R.string.bottom_navigation_home))
+            }, icon = {
+                Icon(imageVector = Icons.Default.Spa, contentDescription = null)
+            })
+            Spacer(modifier = Modifier.height(8.dp))
+            NavigationRailItem(selected = false, onClick = {}, label = {
+                Text(text = stringResource(id = R.string.bottom_navigation_profile))
+            }, icon = {
+                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
+            })
+        }
+    }
 }
 
 // Step: Landscape Mode
 @Composable
 fun MySootheAppLandscape() {
     // Implement composable here
+    MySootheTheme {
+        Row {
+            SootheNavigationRail()
+            HomeScreen()
+        }
+    }
 }
 
 // Step: MySoothe App
 @Composable
-fun MySootheApp(modifier: Modifier = Modifier) {
+fun MySootheApp(windowSize: WindowSizeClass) {
     // Implement composable here
-//    Surface(modifier = modifier.background(Color.Blue)) {
-//    Surface {
-    SearchBar(modifier)
-//    }
+    when (windowSize.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> {
+            MySootheAppPortrait()
+        }
+
+        WindowWidthSizeClass.Expanded -> {
+            MySootheAppLandscape()
+        }
+    }
 }
 
 private val alignYourBodyData = listOf(
@@ -347,19 +412,19 @@ fun FavoriteCollectionCardPreview() {
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
+//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun FavoriteCollectionsGridPreview() {
     MySootheTheme { FavoriteCollectionsGrid() }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
+//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun AlignYourBodyRowPreview() {
     MySootheTheme { AlignYourBodyRow() }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
+//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun HomeSectionPreview() {
     MySootheTheme {
@@ -369,31 +434,31 @@ fun HomeSectionPreview() {
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE, heightDp = 180)
+//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE, heightDp = 180)
 @Composable
 fun ScreenContentPreview() {
     MySootheTheme { HomeScreen() }
 }
 
-//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
+@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun BottomNavigationPreview() {
     MySootheTheme { SootheBottomNavigation(Modifier.padding(top = 24.dp)) }
 }
 
-//@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
+@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun NavigationRailPreview() {
     MySootheTheme { SootheNavigationRail() }
 }
 
-//@Preview(widthDp = 360, heightDp = 640)
+@Preview(widthDp = 360, heightDp = 640)
 @Composable
 fun MySoothePortraitPreview() {
     MySootheAppPortrait()
 }
 
-//@Preview(widthDp = 640, heightDp = 360)
+@Preview(showBackground = true, widthDp = 640, heightDp = 360)
 @Composable
 fun MySootheLandscapePreview() {
     MySootheAppLandscape()
